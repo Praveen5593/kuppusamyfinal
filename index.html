@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Management</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    table, th, td { border:1px solid #ccc; border-collapse: collapse; padding: 10px; }
+    input { margin: 5px; padding: 8px; }
+    button { padding: 8px 12px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Add User</h2>
+  <input type="text" id="name" placeholder="Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="text" id="department" placeholder="Department">
+  <button onclick="addUser()">Add</button>
+
+  <h2>Users List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+      </tr>
+    </thead>
+    <tbody id="userTable"></tbody>
+  </table>
+
+  <script>
+    const API_URL = '/api/users';
+    async function fetchUsers() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const table = document.getElementById('userTable');
+      table.innerHTML = '';
+      data.forEach(user => {
+        table.innerHTML += '<tr><td>' + user.id + '</td><td>' + user.name + '</td><td>' + user.email + '</td><td>' + user.department + '</td></tr>';
+      });
+    }
+    async function addUser() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const department = document.getElementById('department').value;
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, department })
+      });
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('department').value = '';
+      fetchUsers();
+    }
+    fetchUsers();
+  </script>
+</body>
+</html>
