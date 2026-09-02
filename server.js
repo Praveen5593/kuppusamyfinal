@@ -9,8 +9,8 @@ app.use(express.json());
 
 const db = mysql.createPool({
   host: 'localhost',
-  user: 'myuser',
-  password: 'mypassword123',
+  user: 'root',
+  password: 'MyNewSecurePass123',
   database: 'fullstack_db'
 }).promise();
 
@@ -24,13 +24,22 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.post('/api/users', async (req, res) => {
-  const { name, email, department } = req.body;
+  const { employee_id, name, position, department, location, email, mobile_number } = req.body;
   try {
-    const [result] = await db.query(
-      'INSERT INTO users (name, email, department) VALUES (?, ?, ?)',
-      [name, email, department]
+    await db.query(
+      'INSERT INTO users (employee_id, name, position, department, location, email, mobile_number) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [employee_id, name, position, department, location, email, mobile_number]
     );
-    res.status(201).json({ message: 'User added successfully', userId: result.insertId });
+    res.status(201).json({ message: 'User added successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/users/:employee_id', async (req, res) => {
+  try {
+    await db.query('DELETE FROM users WHERE employee_id = ?', [req.params.employee_id]);
+    res.json({ message: 'User removed successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

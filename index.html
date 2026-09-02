@@ -1,61 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>User Management</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    table, th, td { border:1px solid #ccc; border-collapse: collapse; padding: 10px; }
-    input { margin: 5px; padding: 8px; }
-    button { padding: 8px 12px; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Database</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #fff; }
+        h2 { color: #000; }
+        .form-inline { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+        .form-inline input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-inline button { padding: 8px 20px; background-color: #f0f0f0; border: 1px solid #a6a6a6; cursor: pointer; font-size: 14px; border-radius: 4px; }
+        .form-inline button:hover { background-color: #e1e1e1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: #f9f9f9; font-weight: bold; }
+        .btn-remove { color: #cc0000; text-decoration: none; font-weight: bold; cursor: pointer; background: none; border: none; font-size: 14px; }
+        .btn-remove:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-  <h2>Add User</h2>
-  <input type="text" id="name" placeholder="Name">
-  <input type="email" id="email" placeholder="Email">
-  <input type="text" id="department" placeholder="Department">
-  <button onclick="addUser()">Add</button>
 
-  <h2>Users List</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Department</th>
-      </tr>
-    </thead>
-    <tbody id="userTable"></tbody>
-  </table>
+    <h2>Add User</h2>
+    <form class="form-inline" id="userForm">
+        <input type="text" id="employee_id" placeholder="Employee ID" required />
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="position" placeholder="Position" required />
+        <input type="text" id="department" placeholder="Department" required />
+        <input type="text" id="location" placeholder="Location" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="mobile_number" placeholder="Mobile Number" required />
+        <button type="submit">Add</button>
+    </form>
 
-  <script>
-    const API_URL = '/api/users';
-    async function fetchUsers() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      const table = document.getElementById('userTable');
-      table.innerHTML = '';
-      data.forEach(user => {
-        table.innerHTML += '<tr><td>' + user.id + '</td><td>' + user.name + '</td><td>' + user.email + '</td><td>' + user.department + '</td></tr>';
-      });
-    }
-    async function addUser() {
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const department = document.getElementById('department').value;
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, department })
-      });
-      document.getElementById('name').value = '';
-      document.getElementById('email').value = '';
-      document.getElementById('department').value = '';
-      fetchUsers();
-    }
-    fetchUsers();
-  </script>
+    <h2>Users List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Emp ID</th><th>Name</th><th>Position</th><th>Department</th><th>Location</th><th>Email</th><th>Mobile Number</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        async function loadUsers() {
+            const res = await fetch('/api/users');
+            const users = await res.json();
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${u.employee_id}</td>
+                    <td>${u.name}</td>
+                    <td>${u.position || ''}</td>
+                    <td>${u.department}</td>
+                    <td>${u.location || ''}</td>
+                    <td>${u.email}</td>
+                    <td>${u.mobile_number || ''}</td>
+                    <td><button class="btn-remove" data-id="${u.employee_id}">Remove</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('userTableBody').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-remove')) {
+                const id = e.target.getAttribute('data-id');
+                if (!confirm('Remove this user?')) return;
+                await fetch('/api/users/' + encodeURIComponent(id), { method: 'DELETE' });
+                loadUsers();
+            }
+        });
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                employee_id: document.getElementById('employee_id').value,
+                name: document.getElementById('name').value,
+                position: document.getElementById('position').value,
+                department: document.getElementById('department').value,
+                location: document.getElementById('location').value,
+                email: document.getElementById('email').value,
+                mobile_number: document.getElementById('mobile_number').value,
+            };
+            await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            e.target.reset();
+            loadUsers();
+        });
+
+        loadUsers();
+    </script>
 </body>
 </html>
