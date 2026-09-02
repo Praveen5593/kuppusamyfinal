@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -8,10 +9,10 @@ app.use(express.static(__dirname));
 app.use(express.json());
 
 const db = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'MyNewSecurePass123',
-  database: 'fullstack_db'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 }).promise();
 
 app.get('/api/users', async (req, res) => {
