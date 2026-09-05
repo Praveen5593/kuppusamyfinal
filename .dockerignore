@@ -1,0 +1,8 @@
+node_modules
+.git
+.env
+aws
+npm-debug.log
+app.log
+index.html
+index.html.save
