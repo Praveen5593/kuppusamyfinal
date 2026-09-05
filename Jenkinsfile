@@ -3,31 +3,31 @@ pipeline {
 
     stages {
 
-        stage('Docker Build') {
+        stage('Docker Compose Build') {
             steps {
-                sh 'docker build -t employee-backend:latest .'
+                sh '''
+                    cd /home/ec2-user/my-backend
+                    docker compose build
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
                 sh '''
-                    docker stop employee-backend || true
-                    docker rm employee-backend || true
-
-                    docker run -d \
-                      --name employee-backend \
-                      --env-file /home/ec2-user/my-backend/.env \
-                      -p 3000:3000 \
-                      employee-backend:latest
+                    cd /home/ec2-user/my-backend
+                    docker compose down
+                    docker compose up -d
                 '''
             }
         }
 
         stage('Verify') {
             steps {
-                sh 'docker ps --filter name=employee-backend'
-                sh 'curl -f http://localhost:3000/api/users'
+                sh '''
+                    docker ps
+                    curl -f http://localhost:3001/api/users
+                '''
             }
         }
     }
