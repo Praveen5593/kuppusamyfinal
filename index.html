@@ -18,9 +18,11 @@
         .btn-remove:hover { text-decoration: underline; }
     </style>
 </head>
+
 <body>
 
     <h2>Add User</h2>
+
     <form class="form-inline" id="userForm">
         <input type="text" id="employee_id" placeholder="Employee ID" required />
         <input type="text" id="name" placeholder="Name" required />
@@ -33,24 +35,39 @@
     </form>
 
     <h2>Users List</h2>
+
     <table>
         <thead>
             <tr>
-                <th>Emp ID</th><th>Name</th><th>Position</th><th>Department</th><th>Location</th><th>Email</th><th>Mobile Number</th><th>Actions</th>
+                <th>Emp ID</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Email</th>
+                <th>Mobile Number</th>
+                <th>Actions</th>
             </tr>
         </thead>
+
         <tbody id="userTableBody">
         </tbody>
     </table>
 
     <script>
+
+        const API_URL = 'http://3.239.201.194:3001';
+
         async function loadUsers() {
-            const res = await fetch('/api/users');
+            const res = await fetch(API_URL + '/api/users');
             const users = await res.json();
+
             const tbody = document.getElementById('userTableBody');
             tbody.innerHTML = '';
+
             users.forEach(u => {
                 const tr = document.createElement('tr');
+
                 tr.innerHTML = `
                     <td>${u.employee_id}</td>
                     <td>${u.name}</td>
@@ -59,23 +76,40 @@
                     <td>${u.location || ''}</td>
                     <td>${u.email}</td>
                     <td>${u.mobile_number || ''}</td>
-                    <td><button class="btn-remove" data-id="${u.employee_id}">Remove</button></td>
+                    <td>
+                        <button class="btn-remove" data-id="${u.employee_id}">
+                            Remove
+                        </button>
+                    </td>
                 `;
+
                 tbody.appendChild(tr);
             });
         }
 
         document.getElementById('userTableBody').addEventListener('click', async (e) => {
+
             if (e.target.classList.contains('btn-remove')) {
+
                 const id = e.target.getAttribute('data-id');
+
                 if (!confirm('Remove this user?')) return;
-                await fetch('/api/users/' + encodeURIComponent(id), { method: 'DELETE' });
+
+                await fetch(
+                    API_URL + '/api/users/' + encodeURIComponent(id),
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
                 loadUsers();
             }
         });
 
         document.getElementById('userForm').addEventListener('submit', async (e) => {
+
             e.preventDefault();
+
             const body = {
                 employee_id: document.getElementById('employee_id').value,
                 name: document.getElementById('name').value,
@@ -83,19 +117,25 @@
                 department: document.getElementById('department').value,
                 location: document.getElementById('location').value,
                 email: document.getElementById('email').value,
-                mobile_number: document.getElementById('mobile_number').value,
+                mobile_number: document.getElementById('mobile_number').value
             };
-            await fetch('/api/users', {
+
+            await fetch(API_URL + '/api/users', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(body)
             });
+
             e.target.reset();
+
             loadUsers();
         });
 
         loadUsers();
+
     </script>
+
 </body>
 </html>
-<-bash: syntax error near unexpected token webhook test -->
