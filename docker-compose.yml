@@ -1,0 +1,8 @@
+services:
+  backend:
+    image: 203800220670.dkr.ecr.us-east-1.amazonaws.com/fullstack-app:latest
+    container_name: employee-backend-compose
+    ports:
+      - "3001:3000"
+    env_file:
+      - /home/ec2-user/my-backend/.env
