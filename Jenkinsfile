@@ -3,6 +3,14 @@ pipeline {
 
     stages {
 
+        stage('Update Code') {
+            steps {
+                sh '''
+                    git -C /home/ec2-user/my-backend pull origin main
+                '''
+            }
+        }
+
         stage('Docker Compose Build') {
             steps {
                 sh '''
