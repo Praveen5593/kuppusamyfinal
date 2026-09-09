@@ -22,9 +22,7 @@ pipeline {
             steps {
                 sh '''
                     cd /home/ec2-user/my-backend
-
-                    docker build --no-cache \
-                        -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+                    docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
                 '''
             }
         }
@@ -32,10 +30,7 @@ pipeline {
         stage('Login to Amazon ECR') {
             steps {
                 sh '''
-                    aws ecr get-login-password --region $AWS_REGION | \
-                    docker login \
-                        --username AWS \
-                        --password-stdin $ECR_REGISTRY
+                    aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
                 '''
             }
         }
@@ -43,30 +38,39 @@ pipeline {
         stage('Push Image to ECR') {
             steps {
                 sh '''
-                    docker push \
-                        $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+                    docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
                 '''
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to ECS') {
             steps {
                 sh '''
-                    cd /home/ec2-user/my-backend
-
-                    docker compose down
-                    docker compose pull
-                    docker compose up -d
+                    aws ecs update-service \
+                        --cluster employee-ha-cluster \
+                        --service employee-ha-service \
+                        --force-new-deployment \
+                        --region $AWS_REGION
                 '''
             }
         }
 
-        stage('Verify') {
+        stage('Verify ECS Deployment') {
             steps {
                 sh '''
-                    docker ps
-                    sleep 5
-                    curl -f http://localhost:3001/api/users
+                    echo "Waiting for ECS deployment..."
+
+                    aws ecs wait services-stable \
+                        --cluster employee-ha-cluster \
+                        --services employee-ha-service \
+                        --region $AWS_REGION
+
+                    echo "ECS deployment is stable."
+
+                    curl -f http://employee-ha-alb-1716773307.us-east-1.elb.amazonaws.com/api/users
+
+                    echo ""
+                    echo "ECS deployment verification successful."
                 '''
             }
         }
