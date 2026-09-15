@@ -4,5 +4,4 @@ node_modules
 aws
 npm-debug.log
 app.log
-index.html
 index.html.save
