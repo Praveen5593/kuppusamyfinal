@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 
 const app = express();
+
 app.use(cors());
 app.use(express.static(__dirname));
 app.use(express.json());
@@ -18,36 +19,188 @@ const db = mysql.createPool({
   }
 }).promise();
 
+
+/* =========================
+   GET ALL EMPLOYEES
+========================= */
+
 app.get('/api/users', async (req, res) => {
+
   try {
-    const [rows] = await db.query('SELECT * FROM users');
+
+    const [rows] = await db.query(
+      'SELECT * FROM users'
+    );
+
     res.json(rows);
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 });
+
+
+/* =========================
+   ADD EMPLOYEE
+========================= */
 
 app.post('/api/users', async (req, res) => {
-  const { employee_id, name, position, department, location, email, mobile_number } = req.body;
+
+  const {
+    employee_id,
+    name,
+    position,
+    department,
+    location,
+    email,
+    mobile_number
+  } = req.body;
+
   try {
+
     await db.query(
-      'INSERT INTO users (employee_id, name, position, department, location, email, mobile_number) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [employee_id, name, position, department, location, email, mobile_number]
+      `INSERT INTO users
+      (
+        employee_id,
+        name,
+        position,
+        department,
+        location,
+        email,
+        mobile_number
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        employee_id,
+        name,
+        position,
+        department,
+        location,
+        email,
+        mobile_number
+      ]
     );
-    res.status(201).json({ message: 'User added successfully' });
+
+    res.status(201).json({
+      message: 'Employee added successfully'
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 });
 
-app.delete('/api/users/:employee_id', async (req, res) => {
+
+/* =========================
+   UPDATE / MODIFY EMPLOYEE
+========================= */
+
+app.put('/api/users/:employee_id', async (req, res) => {
+
+  const {
+    name,
+    position,
+    department,
+    location,
+    email,
+    mobile_number
+  } = req.body;
+
   try {
-    await db.query('DELETE FROM users WHERE employee_id = ?', [req.params.employee_id]);
-    res.json({ message: 'User removed successfully' });
+
+    const [result] = await db.query(
+      `UPDATE users
+       SET
+         name = ?,
+         position = ?,
+         department = ?,
+         location = ?,
+         email = ?,
+         mobile_number = ?
+       WHERE employee_id = ?`,
+      [
+        name,
+        position,
+        department,
+        location,
+        email,
+        mobile_number,
+        req.params.employee_id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+
+      return res.status(404).json({
+        error: 'Employee not found'
+      });
+
+    }
+
+    res.json({
+      message: 'Employee updated successfully'
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 });
+
+
+/* =========================
+   DELETE EMPLOYEE
+========================= */
+
+app.delete('/api/users/:employee_id', async (req, res) => {
+
+  try {
+
+    const [result] = await db.query(
+      'DELETE FROM users WHERE employee_id = ?',
+      [req.params.employee_id]
+    );
+
+    if (result.affectedRows === 0) {
+
+      return res.status(404).json({
+        error: 'Employee not found'
+      });
+
+    }
+
+    res.json({
+      message: 'Employee removed successfully'
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      error: err.message
+    });
+
+  }
+
+});
+
+
+/* =========================
+   START SERVER
+========================= */
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

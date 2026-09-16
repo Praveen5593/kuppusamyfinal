@@ -1,141 +1,1017 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Database</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #fff; }
-        h2 { color: #000; }
-        .form-inline { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-        .form-inline input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .form-inline button { padding: 8px 20px; background-color: #f0f0f0; border: 1px solid #a6a6a6; cursor: pointer; font-size: 14px; border-radius: 4px; }
-        .form-inline button:hover { background-color: #e1e1e1; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-        th { background-color: #f9f9f9; font-weight: bold; }
-        .btn-remove { color: #cc0000; text-decoration: none; font-weight: bold; cursor: pointer; background: none; border: none; font-size: 14px; }
-        .btn-remove:hover { text-decoration: underline; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmployeeHub | Employee Management</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #1f2937;
+}
+
+.header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 18px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.logo span {
+    color: #111827;
+}
+
+.header-text {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 35px auto;
+}
+
+.page-title {
+    margin-bottom: 25px;
+}
+
+.page-title h1 {
+    font-size: 30px;
+    margin-bottom: 7px;
+}
+
+.page-title p {
+    color: #6b7280;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    border: 1px solid #e5e7eb;
+}
+
+.card-title {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.card-number {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.blue {
+    border-left: 5px solid #2563eb;
+}
+
+.green {
+    border-left: 5px solid #16a34a;
+}
+
+.purple {
+    border-left: 5px solid #9333ea;
+}
+
+.section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    border: 1px solid #e5e7eb;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.section-title p {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.employee-form {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.form-group input {
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+
+.form-button {
+    display: flex;
+    align-items: flex-end;
+}
+
+.btn-add {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-add:hover {
+    background: #1d4ed8;
+}
+
+.directory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-box {
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f9fafb;
+}
+
+th {
+    text-align: left;
+    padding: 13px;
+    color: #4b5563;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+tbody tr:hover {
+    background: #f9fafb;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.btn-edit {
+    background: #eff6ff;
+    color: #2563eb;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.btn-remove {
+    background: #fef2f2;
+    color: #dc2626;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.success {
+    color: #16a34a;
+}
+
+.error {
+    color: #dc2626;
+}
+
+.footer {
+    text-align: center;
+    padding: 25px;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+/* EDIT POPUP */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(17,24,39,.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 650px;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 22px;
+}
+
+.close {
+    font-size: 28px;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    padding: 10px 18px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.btn-save {
+    padding: 10px 18px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+@media(max-width:900px) {
+    .cards {
+        grid-template-columns:1fr;
+    }
+
+    .employee-form {
+        grid-template-columns:1fr 1fr;
+    }
+}
+
+@media(max-width:600px) {
+    .employee-form,
+    .edit-form {
+        grid-template-columns:1fr;
+    }
+
+    .directory-header {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .search-box {
+        width:100%;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <h2>Add User</h2>
+<header class="header">
+    <div class="logo">Employee<span>Hub</span></div>
+    <div class="header-text">Employee Management System</div>
+</header>
 
-    <form class="form-inline" id="userForm">
-        <input type="text" id="employee_id" placeholder="Employee ID" required />
-        <input type="text" id="name" placeholder="Name" required />
-        <input type="text" id="position" placeholder="Position" required />
-        <input type="text" id="department" placeholder="Department" required />
-        <input type="text" id="location" placeholder="Location" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="text" id="mobile_number" placeholder="Mobile Number" required />
-        <button type="submit">Add</button>
-    </form>
+<main class="container">
 
-    <h2>Users List</h2>
+<div class="page-title">
+    <h1>Employee Management</h1>
+    <p>Manage your organization's employee records from one place.</p>
+</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Emp ID</th>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Department</th>
-                <th>Location</th>
-                <th>Email</th>
-                <th>Mobile Number</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+<div class="cards">
 
-        <tbody id="userTableBody">
-        </tbody>
-    </table>
+    <div class="card blue">
+        <div class="card-title">Total Employees</div>
+        <div class="card-number" id="totalEmployees">0</div>
+    </div>
 
-    <script>
+    <div class="card green">
+        <div class="card-title">Departments</div>
+        <div class="card-number" id="totalDepartments">0</div>
+    </div>
 
-        const API_URL = '';
+    <div class="card purple">
+        <div class="card-title">Locations</div>
+        <div class="card-number" id="totalLocations">0</div>
+    </div>
 
-        async function loadUsers() {
-            const res = await fetch(API_URL + '/api/users');
-            const users = await res.json();
+</div>
 
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = '';
+<section class="section">
 
-            users.forEach(u => {
-                const tr = document.createElement('tr');
+<div class="section-title">
+    <h2>Add New Employee</h2>
+    <p>Enter the employee details below.</p>
+</div>
 
-                tr.innerHTML = `
-                    <td>${u.employee_id}</td>
-                    <td>${u.name}</td>
-                    <td>${u.position || ''}</td>
-                    <td>${u.department}</td>
-                    <td>${u.location || ''}</td>
-                    <td>${u.email}</td>
-                    <td>${u.mobile_number || ''}</td>
-                    <td>
-                        <button class="btn-remove" data-id="${u.employee_id}">
-                            Remove
-                        </button>
-                    </td>
-                `;
+<form id="userForm" class="employee-form">
 
-                tbody.appendChild(tr);
-            });
-        }
+<div class="form-group">
+<label>Employee ID</label>
+<input id="employee_id" placeholder="Example: EMP001" required>
+</div>
 
-        document.getElementById('userTableBody').addEventListener('click', async (e) => {
+<div class="form-group">
+<label>Name</label>
+<input id="name" placeholder="Employee name" required>
+</div>
 
-            if (e.target.classList.contains('btn-remove')) {
+<div class="form-group">
+<label>Position</label>
+<input id="position" placeholder="Example: Developer" required>
+</div>
 
-                const id = e.target.getAttribute('data-id');
+<div class="form-group">
+<label>Department</label>
+<input id="department" placeholder="Example: IT" required>
+</div>
 
-                if (!confirm('Remove this user?')) return;
+<div class="form-group">
+<label>Location</label>
+<input id="location" placeholder="Example: Coimbatore" required>
+</div>
 
-                await fetch(
-                    API_URL + '/api/users/' + encodeURIComponent(id),
-                    {
-                        method: 'DELETE'
-                    }
-                );
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="email" placeholder="employee@example.com" required>
+</div>
 
-                loadUsers();
-            }
-        });
+<div class="form-group">
+<label>Mobile Number</label>
+<input id="mobile_number" placeholder="Mobile number" required>
+</div>
 
-        document.getElementById('userForm').addEventListener('submit', async (e) => {
+<div class="form-button">
+<button class="btn-add" type="submit">
++ Add Employee
+</button>
+</div>
 
-            e.preventDefault();
+</form>
 
-            const body = {
-                employee_id: document.getElementById('employee_id').value,
-                name: document.getElementById('name').value,
-                position: document.getElementById('position').value,
-                department: document.getElementById('department').value,
-                location: document.getElementById('location').value,
-                email: document.getElementById('email').value,
-                mobile_number: document.getElementById('mobile_number').value
-            };
+<div id="message" class="message"></div>
 
-            await fetch(API_URL + '/api/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+</section>
+
+<section class="section">
+
+<div class="directory-header">
+
+<div class="section-title" style="margin:0">
+<h2>Employee Directory</h2>
+<p>View and manage employee information.</p>
+</div>
+
+<div class="search-box">
+<input id="searchInput" placeholder="Search employees...">
+</div>
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Emp ID</th>
+<th>Name</th>
+<th>Position</th>
+<th>Department</th>
+<th>Location</th>
+<th>Email</th>
+<th>Mobile</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="userTableBody"></tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</main>
+
+<footer class="footer">
+EmployeeHub • Employee Management System
+</footer>
+
+
+<!-- EDIT EMPLOYEE POPUP -->
+
+<div id="editModal" class="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>Edit Employee</h2>
+<span class="close" id="closeModal">&times;</span>
+</div>
+
+<form id="editForm">
+
+<div class="edit-form">
+
+<div class="form-group">
+<label>Employee ID</label>
+<input id="edit_employee_id" disabled>
+</div>
+
+<div class="form-group">
+<label>Name</label>
+<input id="edit_name" required>
+</div>
+
+<div class="form-group">
+<label>Position</label>
+<input id="edit_position" required>
+</div>
+
+<div class="form-group">
+<label>Department</label>
+<input id="edit_department" required>
+</div>
+
+<div class="form-group">
+<label>Location</label>
+<input id="edit_location" required>
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="edit_email" required>
+</div>
+
+<div class="form-group">
+<label>Mobile Number</label>
+<input id="edit_mobile_number" required>
+</div>
+
+</div>
+
+<div class="modal-buttons">
+
+<button type="button"
+        class="btn-cancel"
+        id="cancelEdit">
+Cancel
+</button>
+
+<button type="submit"
+        class="btn-save">
+Save Changes
+</button>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+
+<script>
+
+const API_URL = '';
+
+let allUsers = [];
+let editingEmployeeId = null;
+
+
+/* LOAD */
+
+async function loadUsers() {
+
+    try {
+
+        const res = await fetch(API_URL + '/api/users');
+
+        if (!res.ok)
+            throw new Error('Unable to load employees');
+
+        allUsers = await res.json();
+
+        displayUsers(allUsers);
+        updateDashboard();
+
+    } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+            'Unable to load employee information.',
+            'error'
+        );
+    }
+}
+
+
+/* DISPLAY */
+
+function displayUsers(users) {
+
+    const tbody =
+        document.getElementById('userTableBody');
+
+    tbody.innerHTML = '';
+
+    users.forEach(u => {
+
+        const row =
+            document.createElement('tr');
+
+        row.innerHTML = `
+
+        <td>${escapeHTML(u.employee_id)}</td>
+
+        <td><strong>${escapeHTML(u.name)}</strong></td>
+
+        <td>${escapeHTML(u.position || '')}</td>
+
+        <td>${escapeHTML(u.department || '')}</td>
+
+        <td>${escapeHTML(u.location || '')}</td>
+
+        <td>${escapeHTML(u.email || '')}</td>
+
+        <td>${escapeHTML(u.mobile_number || '')}</td>
+
+        <td class="actions">
+
+        <button
+        class="btn-edit"
+        data-id="${escapeHTML(u.employee_id)}">
+        Edit
+        </button>
+
+        <button
+        class="btn-remove"
+        data-id="${escapeHTML(u.employee_id)}">
+        Remove
+        </button>
+
+        </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+
+/* DASHBOARD */
+
+function updateDashboard() {
+
+    document.getElementById(
+        'totalEmployees'
+    ).textContent = allUsers.length;
+
+    const departments =
+        new Set(
+            allUsers
+            .map(u => u.department)
+            .filter(Boolean)
+        );
+
+    const locations =
+        new Set(
+            allUsers
+            .map(u => u.location)
+            .filter(Boolean)
+        );
+
+    document.getElementById(
+        'totalDepartments'
+    ).textContent = departments.size;
+
+    document.getElementById(
+        'totalLocations'
+    ).textContent = locations.size;
+}
+
+
+/* ADD */
+
+document.getElementById('userForm')
+.addEventListener('submit', async e => {
+
+    e.preventDefault();
+
+    const body = {
+
+        employee_id:
+        document.getElementById('employee_id').value.trim(),
+
+        name:
+        document.getElementById('name').value.trim(),
+
+        position:
+        document.getElementById('position').value.trim(),
+
+        department:
+        document.getElementById('department').value.trim(),
+
+        location:
+        document.getElementById('location').value.trim(),
+
+        email:
+        document.getElementById('email').value.trim(),
+
+        mobile_number:
+        document.getElementById('mobile_number').value.trim()
+    };
+
+    try {
+
+        const res = await fetch(
+            API_URL + '/api/users',
+            {
+                method:'POST',
+
+                headers:{
+                    'Content-Type':'application/json'
                 },
-                body: JSON.stringify(body)
-            });
 
-            e.target.reset();
+                body:JSON.stringify(body)
+            }
+        );
 
-            loadUsers();
-        });
+        if(!res.ok)
+            throw new Error('Add failed');
 
-        loadUsers();
+        e.target.reset();
 
-    </script>
+        showMessage(
+            'Employee added successfully.',
+            'success'
+        );
+
+        await loadUsers();
+
+    } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+            'Unable to add employee.',
+            'error'
+        );
+    }
+});
+
+
+/* EDIT + DELETE */
+
+document.getElementById('userTableBody')
+.addEventListener('click', async e => {
+
+    const id = e.target.dataset.id;
+
+    if(e.target.classList.contains('btn-edit')) {
+
+        const user = allUsers.find(
+            u => String(u.employee_id) === String(id)
+        );
+
+        if(!user) return;
+
+        editingEmployeeId = user.employee_id;
+
+        document.getElementById(
+            'edit_employee_id'
+        ).value = user.employee_id;
+
+        document.getElementById(
+            'edit_name'
+        ).value = user.name || '';
+
+        document.getElementById(
+            'edit_position'
+        ).value = user.position || '';
+
+        document.getElementById(
+            'edit_department'
+        ).value = user.department || '';
+
+        document.getElementById(
+            'edit_location'
+        ).value = user.location || '';
+
+        document.getElementById(
+            'edit_email'
+        ).value = user.email || '';
+
+        document.getElementById(
+            'edit_mobile_number'
+        ).value = user.mobile_number || '';
+
+        document.getElementById(
+            'editModal'
+        ).style.display = 'flex';
+
+        return;
+    }
+
+
+    if(e.target.classList.contains('btn-remove')) {
+
+        if(!confirm('Remove this employee?'))
+            return;
+
+        try {
+
+            const res = await fetch(
+                API_URL +
+                '/api/users/' +
+                encodeURIComponent(id),
+                {
+                    method:'DELETE'
+                }
+            );
+
+            if(!res.ok)
+                throw new Error('Delete failed');
+
+            showMessage(
+                'Employee removed successfully.',
+                'success'
+            );
+
+            await loadUsers();
+
+        } catch(error) {
+
+            console.error(error);
+
+            showMessage(
+                'Unable to remove employee.',
+                'error'
+            );
+        }
+    }
+});
+
+
+/* SAVE EDIT */
+
+document.getElementById('editForm')
+.addEventListener('submit', async e => {
+
+    e.preventDefault();
+
+    if(!editingEmployeeId)
+        return;
+
+    const body = {
+
+        name:
+        document.getElementById('edit_name').value.trim(),
+
+        position:
+        document.getElementById('edit_position').value.trim(),
+
+        department:
+        document.getElementById('edit_department').value.trim(),
+
+        location:
+        document.getElementById('edit_location').value.trim(),
+
+        email:
+        document.getElementById('edit_email').value.trim(),
+
+        mobile_number:
+        document.getElementById(
+            'edit_mobile_number'
+        ).value.trim()
+    };
+
+    try {
+
+        const res = await fetch(
+            API_URL +
+            '/api/users/' +
+            encodeURIComponent(editingEmployeeId),
+            {
+                method:'PUT',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify(body)
+            }
+        );
+
+        if(!res.ok)
+            throw new Error('Update failed');
+
+        closeEditModal();
+
+        showMessage(
+            'Employee updated successfully.',
+            'success'
+        );
+
+        await loadUsers();
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert('Unable to update employee.');
+    }
+});
+
+
+/* CLOSE EDIT */
+
+function closeEditModal() {
+
+    document.getElementById(
+        'editModal'
+    ).style.display = 'none';
+
+    editingEmployeeId = null;
+}
+
+document.getElementById(
+    'closeModal'
+).onclick = closeEditModal;
+
+document.getElementById(
+    'cancelEdit'
+).onclick = closeEditModal;
+
+
+/* SEARCH */
+
+document.getElementById('searchInput')
+.addEventListener('input', e => {
+
+    const search =
+        e.target.value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        allUsers.filter(user =>
+
+            Object.values(user)
+            .some(value =>
+
+                String(value ?? '')
+                .toLowerCase()
+                .includes(search)
+
+            )
+        );
+
+    displayUsers(filtered);
+});
+
+
+/* MESSAGE */
+
+function showMessage(text,type) {
+
+    const message =
+        document.getElementById('message');
+
+    message.textContent = text;
+
+    message.className =
+        'message ' + type;
+
+    setTimeout(() => {
+        message.textContent = '';
+    },4000);
+}
+
+
+/* SAFE DISPLAY */
+
+function escapeHTML(value) {
+
+    return String(value ?? '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#039;');
+}
+
+
+loadUsers();
+
+</script>
 
 </body>
 </html>
